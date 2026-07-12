@@ -10,14 +10,22 @@ function Register() {
     e.preventDefault();
 
     try {
-      const response = await API.post("/auth/register", {
+      await API.post("/auth/register", {
         name: name,
         email: email,
         password: password,
       });
 
-      alert(response.data.message || "Registration successful");
-      window.location.href = "/login";
+      const loginResponse = await API.post("/auth/login", {
+        email: email,
+        password: password,
+      });
+
+      localStorage.setItem("user", JSON.stringify(loginResponse.data.user));
+      localStorage.setItem("userId", loginResponse.data.user._id);
+
+      window.location.href = "/dashboard";
+
     } catch (error) {
       console.log(error);
       alert("Registration failed: " + (error.response?.data?.message || error.message));
@@ -25,7 +33,7 @@ function Register() {
   }
 
   return (
-    <div>
+    <div style={{ maxWidth: "400px", margin: "60px auto", textAlign: "center" }}>
       <h1>Register Page</h1>
 
       <form onSubmit={handleSubmit}>
